@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/part_titlebar" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_marginTop="20dp"
+        android:layout_height="0.5dp"
+        android:background="@color/theme_text" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="*"
+            android:textColor="@color/red"
+            android:textSize="15sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:gravity="right"
+            android:text="昵称:"
+            android:textColor="@color/theme_text"
+            android:textSize="21sp" />
+
+        <EditText
+            android:id="@+id/nick_et"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:hint="请输入昵称"
+            android:layout_weight="2"
+            android:background="@drawable/bg_edit"
+            android:paddingLeft="10dp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="20dp"
+        android:background="@color/theme_text" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:gravity="right"
+            android:text="性别:"
+            android:textColor="@color/theme_text"
+            android:textSize="21sp" />
+
+        <RadioGroup
+            android:id="@+id/sex_rg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/sex_male_rb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:button="@drawable/bg_radio"
+                android:text="男"
+                android:textColor="@color/theme_text"
+                android:textSize="21sp" />
+
+            <RadioButton
+                android:id="@+id/sex_female_rb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:button="@drawable/bg_radio"
+                android:text="女"
+                android:textColor="@color/theme_text"
+                android:textSize="21sp" />
+
+            <RadioButton
+                android:id="@+id/sex_private_rb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:button="@drawable/bg_radio"
+                android:text="保密"
+                android:textColor="@color/theme_text"
+                android:textSize="21sp" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="20dp"
+        android:background="@color/theme_text" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:gravity="right"
+            android:text="手机号:"
+            android:textColor="@color/theme_text"
+            android:textSize="21sp" />
+
+        <EditText
+            android:id="@+id/phone_et"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:hint="请输入手机号"
+            android:layout_weight="2"
+            android:background="@drawable/bg_edit"
+            android:paddingLeft="10dp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/theme_text" />
+
+    <Button
+        android:id="@+id/save_btn"
+        android:layout_width="280dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/shape_radius"
+        android:text="@string/save"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/login_out_btn"
+        android:layout_width="280dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/shape_radius"
+        android:text="@string/login_out"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+</LinearLayout>
