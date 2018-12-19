@@ -1,5 +1,9 @@
 package com.coffee.saber.utils;
 
+import android.util.Log;
+
+import com.google.gson.Gson;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -8,6 +12,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -17,6 +23,7 @@ import java.net.URL;
 
 public class HttpUtils {
     private static final int TIMEOUT_IN_MILLIONS = 5000;
+    private static final String TAG = "HttpUtils";
 
     public interface CallBack
     {
@@ -120,7 +127,12 @@ public class HttpUtils {
                 return baos.toString();
             } else
             {
-                throw new RuntimeException(" responseCode is not 200 ... ");
+                Map<String, String> map = new HashMap<>();
+                map.put("status", "0");
+                map.put("data", "网络连接失败");
+                Gson gson = new Gson();
+                return gson.toJson(map);
+//                throw new RuntimeException(" responseCode is not 200 ... ");
             }
 
         } catch (Exception e)
@@ -203,7 +215,12 @@ public class HttpUtils {
             }
         } catch (Exception e)
         {
-            e.printStackTrace();
+            Map<String, String> map = new HashMap<>();
+            map.put("status", "0");
+            map.put("data", "网络连接失败");
+            Gson gson = new Gson();
+            Log.i(TAG, "doPost: " + e.getMessage());
+            return gson.toJson(map);
         }
         // 使用finally块来关闭输出流、输入流
         finally
