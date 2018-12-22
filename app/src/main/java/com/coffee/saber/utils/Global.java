@@ -20,8 +20,8 @@ public class Global {
     public static final String REGISTER_URL = USER_CONTROLLER + "?action=register";
     public static final String UPDATE_USER = USER_CONTROLLER + "?action=updateUser";
 
-    public static final String PRODUCT_LIST_URL = PRODUCT_CONTROLLER+ "?action=product_list";
-    public static final String BUY_URL = ORDER_CONTROLLER+ "?action=buy";
+    public static final String PRODUCT_LIST_URL = PRODUCT_CONTROLLER+ "?action=productList";
+    public static final String BUY_URL = ORDER_CONTROLLER+ "?action=makeOrder";
 
     public static final String CREATE_USER_TABLE = "CREATE TABLE IF NOT EXISTS USER (" +
             "  id INT(11) NOT NULL, " +

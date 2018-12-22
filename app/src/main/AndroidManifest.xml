@@ -23,6 +23,7 @@
         <activity android:name=".ui.activity.MainActivity">
         </activity>
         <!--<activity android:name=".ui.activity.LoginActivity"/>-->
+        <service android:name=".service.ProductService" />
     </application>
 
 </manifest>
