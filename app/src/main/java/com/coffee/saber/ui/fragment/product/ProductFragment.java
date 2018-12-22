@@ -99,6 +99,8 @@ public class ProductFragment extends BaseFragment {
         buyDialog = new AlertDialog.Builder(mActivity).create();
 
         final View alertView = LayoutInflater.from(mActivity).inflate(R.layout.alert_buy, null);
+        final TextView productNameTv = alertView.findViewById(R.id.product_name_tv);
+        final TextView describeTv = alertView.findViewById(R.id.describe_tv);
         final TextView sumPriceTV = alertView.findViewById(R.id.sum_price_tv);
         final TextView orderNumTV = alertView.findViewById(R.id.order_num_tv);
         ImageView addBtn = alertView.findViewById(R.id.add_btn);
@@ -106,6 +108,8 @@ public class ProductFragment extends BaseFragment {
         Button addOrderBtn = alertView.findViewById(R.id.add_order_ben);
 
         String sumPrice = "￥" + product.getPrice();
+        productNameTv.setText(product.getName());
+        describeTv.setText(product.getDescribe());
         sumPriceTV.setText(sumPrice);
         orderNumTV.setText(String.valueOf(1));
 
