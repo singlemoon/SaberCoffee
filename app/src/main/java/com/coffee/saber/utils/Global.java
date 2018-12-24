@@ -20,8 +20,13 @@ public class Global {
     public static final String REGISTER_URL = USER_CONTROLLER + "?action=register";
     public static final String UPDATE_USER = USER_CONTROLLER + "?action=updateUser";
 
+    // 产品
     public static final String PRODUCT_LIST_URL = PRODUCT_CONTROLLER+ "?action=productList";
     public static final String BUY_URL = ORDER_CONTROLLER+ "?action=makeOrder";
+    public static final String ADD_SHOPPING_CART_URL = SHOPPING_CART_CONTROLLER+ "?action=addProduct";
+
+    // 购物车
+    public static final String SHOPPING_CART_LIST = SHOPPING_CART_CONTROLLER+ "?action=shoppingCartList";
 
     public static final String CREATE_USER_TABLE = "CREATE TABLE IF NOT EXISTS USER (" +
             "  id INT(11) NOT NULL, " +

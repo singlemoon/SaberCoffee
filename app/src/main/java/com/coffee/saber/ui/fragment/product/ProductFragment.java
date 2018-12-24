@@ -24,16 +24,17 @@ import android.widget.TextView;
 import com.coffee.saber.R;
 import com.coffee.saber.model.Order;
 import com.coffee.saber.model.Product;
+import com.coffee.saber.model.ShoppingCart;
 import com.coffee.saber.service.ProductService;
 import com.coffee.saber.ui.adapter.ProductAdapter;
 import com.coffee.saber.ui.fragment.BaseFragment;
+import com.coffee.saber.ui.fragment.shopping_cart.ShoppingCartFragment;
 import com.coffee.saber.utils.FormatUtils;
 import com.coffee.saber.utils.Global;
 import com.coffee.saber.utils.HttpParser;
 import com.coffee.saber.utils.JsonUtils;
 import com.coffee.saber.utils.SPPrivateUtils;
 import com.coffee.saber.utils.T;
-import com.coffee.saber.utils.TestData;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
@@ -128,7 +129,7 @@ public class ProductFragment extends BaseFragment {
         mAdapter = new ProductAdapter(mActivity, R.layout.item_product, products, new ProductAdapter.OnItemBtnClickListener() {
             @Override
             public void onAddShoppingCartBtnClick(int position) {
-                addShoppingCart();
+                addShoppingCart(products.get(position), 1);
             }
 
             @Override
@@ -212,8 +213,27 @@ public class ProductFragment extends BaseFragment {
         }).start();
     }
 
-    private void addShoppingCart() {
-
+    private void addShoppingCart(final Product product, final int num) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1);
+                    int userId = SPPrivateUtils.getInt(mActivity, "user_id", 0);
+                    int productId = product.getId();
+                    ShoppingCart shoppingCart = new ShoppingCart(userId, productId, num);
+                    Map<String, String> map = HttpParser.parseMapPost(Global.ADD_SHOPPING_CART_URL,  "data="+shoppingCart.toJson());
+                    int status = Integer.parseInt(map.get("status"));
+//                    int status = 1;
+                    Message msg = new Message();
+                    msg.what = SHOPPING_CART;
+                    msg.arg1 = status;
+                    mHandler.sendMessage(msg);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     private void buy(final Product product, final int num) {
@@ -247,7 +267,7 @@ public class ProductFragment extends BaseFragment {
 
     @Override
     public void onDestroyView() {
-        mActivity.unbindService(mConn);
+        mActivity.getApplicationContext().unbindService(mConn);
         super.onDestroyView();
     }
 
@@ -269,6 +289,11 @@ public class ProductFragment extends BaseFragment {
             super.handleMessage(msg);
             switch (msg.what) {
                 case SHOPPING_CART:
+                    if (1 == msg.arg1) {
+                        T.showShort(activity, "加入购物车成功");
+                    } else {
+                        T.showShort(activity, "加入购物车失败");
+                    }
                     break;
                 case BUY:
                     if (1 == msg.arg1) {
