@@ -7,12 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.coffee.saber.R;
 import com.coffee.saber.model.Order;
-import com.coffee.saber.model.Product;
-import com.coffee.saber.utils.FormatUtils;
 
 import java.util.List;
 
@@ -39,19 +36,19 @@ public class OrderAdapter extends ArrayAdapter {
         final Order order = orders.get(position);
         View view = LayoutInflater.from(getContext()).inflate(resourceId, null);
 
-        LinearLayout orderItemLL = view.findViewById(R.id.order_item_ll);
-        Button orderAgainBtn = view.findViewById(R.id.order_again_btn);
+//        LinearLayout orderItemLL = view.findViewById(R.id.order_item_ll);
+        Button confirmBtn = view.findViewById(R.id.confirm_btn);
 
-        orderItemLL.setOnClickListener(new View.OnClickListener() {
+//        orderItemLL.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mListener.onItemClick(position);
+//            }
+//        });
+        confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onItemClick(position);
-            }
-        });
-        orderAgainBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onOrderAgainBtnClick(position);
+                mListener.onConfirmBtnClick(position);
             }
         });
         return view;
@@ -66,6 +63,6 @@ public class OrderAdapter extends ArrayAdapter {
 
     public interface OnItemBtnClickListener {
         void onItemClick(int position);
-        void onOrderAgainBtnClick(int position);
+        void onConfirmBtnClick(int position);
     }
 }

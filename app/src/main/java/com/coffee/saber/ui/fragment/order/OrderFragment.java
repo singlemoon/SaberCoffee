@@ -73,8 +73,8 @@ public class OrderFragment extends BaseFragment {
             }
 
             @Override
-            public void onOrderAgainBtnClick(int position) {
-                T.showShort(mActivity, "再来一单");
+            public void onConfirmBtnClick(int position) {
+                T.showShort(mActivity, "确认收货");
             }
         });
         orderLV.setAdapter(mAdapter);

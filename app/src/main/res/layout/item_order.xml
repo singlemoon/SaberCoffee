@@ -100,14 +100,14 @@
                 android:textSize="12sp" />
 
             <Button
-                android:id="@+id/order_again_btn"
+                android:id="@+id/confirm_btn"
                 android:layout_width="100dp"
                 android:layout_height="40dp"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
                 android:layout_marginBottom="20dp"
                 android:background="@drawable/bg_border"
-                android:text="@string/order_again"
+                android:text="@string/confirm"
                 android:textColor="@color/theme_text"
                 android:textSize="15sp" />
         </RelativeLayout>

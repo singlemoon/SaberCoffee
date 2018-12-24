@@ -15,7 +15,7 @@
 
     <!--order-->
     <string name="buy">购买</string>
-    <string name="order_again">再来一单</string>
+    <string name="confirm">确认收货</string>
 
     <!--mine-->
     <string name="save">保存</string>
