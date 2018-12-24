@@ -11,8 +11,13 @@ public class JsonUtils {
 		Gson gson = new Gson();
 		return gson.toJson(model);
 	}
-	
-	public static Object fromJson(String json, Type typeOfT) {
+
+	public static String toJson(Object obj) {
+		Gson gson = new Gson();
+		return gson.toJson(obj);
+	}
+
+	public static <T> T fromJson(String json, Type typeOfT) {
 		Gson gson = new Gson();
 		return gson.fromJson(json, typeOfT);
 	}

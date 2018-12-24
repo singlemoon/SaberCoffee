@@ -2,10 +2,16 @@ package com.coffee.saber.ui.fragment.product;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,14 +24,18 @@ import android.widget.TextView;
 import com.coffee.saber.R;
 import com.coffee.saber.model.Order;
 import com.coffee.saber.model.Product;
+import com.coffee.saber.model.ShoppingCart;
+import com.coffee.saber.service.ProductService;
 import com.coffee.saber.ui.adapter.ProductAdapter;
 import com.coffee.saber.ui.fragment.BaseFragment;
+import com.coffee.saber.ui.fragment.shopping_cart.ShoppingCartFragment;
 import com.coffee.saber.utils.FormatUtils;
 import com.coffee.saber.utils.Global;
 import com.coffee.saber.utils.HttpParser;
+import com.coffee.saber.utils.JsonUtils;
 import com.coffee.saber.utils.SPPrivateUtils;
 import com.coffee.saber.utils.T;
-import com.coffee.saber.utils.TestData;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +54,41 @@ public class ProductFragment extends BaseFragment {
     private ProductHandler mHandler = null;
     private ArrayAdapter mAdapter = null;
     private AlertDialog buyDialog = null;
+    private ProductService.ProductBinder productBinder = null;
+    private ServiceConnection mConn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.i(TAG, "onServiceConnected: ");
+            productBinder = (ProductService.ProductBinder) service;
+            if (null != productBinder) {
+                productBinder.startGetProduct(new ProductService.OnGetProductResponseListener() {
+                    @Override
+                    public void onSuccess(String productJson) {
+                        Message msg = new Message();
+                        msg.what = PRODUCT_LIST;
+                        msg.arg1 = 1;
+                        msg.obj = productJson;
+                        mHandler.sendMessage(msg);
+                    }
+
+                    @Override
+                    public void onFailed(String errMsg) {
+                        Message msg = new Message();
+                        msg.what = PRODUCT_LIST;
+                        msg.arg1 = 0;
+                        msg.obj = errMsg;
+                        mHandler.sendMessage(msg);
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.i(TAG, "onServiceDisconnected: ");
+            productBinder = null;
+        }
+    };
 
     private static final String TAG = "ProductFragment";
 
@@ -74,6 +119,7 @@ public class ProductFragment extends BaseFragment {
     private void initValue() {
         products = new ArrayList<>();
         mHandler = new ProductHandler(this);
+        mActivity.getApplicationContext().bindService(new Intent(mActivity, ProductService.class), mConn, Context.BIND_AUTO_CREATE);
         getProducts();
     }
 
@@ -83,7 +129,7 @@ public class ProductFragment extends BaseFragment {
         mAdapter = new ProductAdapter(mActivity, R.layout.item_product, products, new ProductAdapter.OnItemBtnClickListener() {
             @Override
             public void onAddShoppingCartBtnClick(int position) {
-                addShoppingCart();
+                addShoppingCart(products.get(position), 1);
             }
 
             @Override
@@ -156,22 +202,38 @@ public class ProductFragment extends BaseFragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-//                Map<String,String> result = HttpParser.parseMapGet(Global.PRODUCT_LIST_URL);
+                Map<String, String> result = HttpParser.parseMapGet(Global.PRODUCT_LIST_URL);
+                int status = Integer.parseInt(result.get("status"));
+                Message msg = new Message();
+                msg.what = PRODUCT_LIST;
+                msg.arg1 = status;
+                msg.obj = result.get("data");
+                mHandler.sendMessage(msg);
+            }
+        }).start();
+    }
+
+    private void addShoppingCart(final Product product, final int num) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
                 try {
                     Thread.sleep(1);
-                    List<Product> productList = TestData.getProducts();
-                    products.clear();
-                    products.addAll(productList);
-                    mHandler.sendEmptyMessage(PRODUCT_LIST);
+                    int userId = SPPrivateUtils.getInt(mActivity, "user_id", 0);
+                    int productId = product.getId();
+                    ShoppingCart shoppingCart = new ShoppingCart(userId, productId, num);
+                    Map<String, String> map = HttpParser.parseMapPost(Global.ADD_SHOPPING_CART_URL,  "data="+shoppingCart.toJson());
+                    int status = Integer.parseInt(map.get("status"));
+//                    int status = 1;
+                    Message msg = new Message();
+                    msg.what = SHOPPING_CART;
+                    msg.arg1 = status;
+                    mHandler.sendMessage(msg);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }).start();
-    }
-
-    private void addShoppingCart() {
-
     }
 
     private void buy(final Product product, final int num) {
@@ -183,9 +245,9 @@ public class ProductFragment extends BaseFragment {
                     int userId = SPPrivateUtils.getInt(mActivity, "user_id", 0);
                     int productId = product.getId();
                     Order order = new Order(userId, productId, num);
-//                    Map<String, String> map = HttpParser.parseMapPost(Global.BUY_URL, order.toJson());
-//                    int status = Integer.parseInt(map.get("status"));
-                    int status = 1;
+                    Map<String, String> map = HttpParser.parseMapPost(Global.BUY_URL,  "data="+order.toJson());
+                    int status = Integer.parseInt(map.get("status"));
+//                    int status = 1;
                     Message msg = new Message();
                     msg.what = BUY;
                     msg.arg1 = status;
@@ -197,8 +259,16 @@ public class ProductFragment extends BaseFragment {
         }).start();
     }
 
-    private void updateList() {
+    private void updateList(List<Product> list) {
+        products.clear();
+        products.addAll(list);
         mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onDestroyView() {
+        mActivity.getApplicationContext().unbindService(mConn);
+        super.onDestroyView();
     }
 
     private static final int SHOPPING_CART = 123456;
@@ -219,6 +289,11 @@ public class ProductFragment extends BaseFragment {
             super.handleMessage(msg);
             switch (msg.what) {
                 case SHOPPING_CART:
+                    if (1 == msg.arg1) {
+                        T.showShort(activity, "加入购物车成功");
+                    } else {
+                        T.showShort(activity, "加入购物车失败");
+                    }
                     break;
                 case BUY:
                     if (1 == msg.arg1) {
@@ -229,7 +304,21 @@ public class ProductFragment extends BaseFragment {
                     }
                     break;
                 case PRODUCT_LIST:
-                    mFragment.updateList();
+                    if (msg.arg1 == 1) {
+                        String productsJson = (String) msg.obj;
+                        Log.i(TAG, "handleMessage: " + productsJson);
+                        List<Product> productList = JsonUtils.fromJson(productsJson, new TypeToken<List<Product>>(){}.getType());
+                        if (null == productList) {
+                            Log.i(TAG, "handleMessage: Json 解析失败");
+                        } else {
+                            for(Product product : productList) {
+                                Log.i(TAG, "handleMessage: Product = "+product.toString());
+                            }
+                        }
+                        mFragment.updateList(productList);
+                    } else {
+                        T.showShort(activity, "产品获取失败");
+                    }
                     break;
 
             }

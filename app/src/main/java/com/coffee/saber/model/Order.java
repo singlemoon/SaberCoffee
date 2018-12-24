@@ -6,8 +6,6 @@ public class Order extends BaseModel{
 	private int userId;
 	private int productId;
 	private int num;
-	private String address;
-	private int payStatus;
 	private int status;
 	private long createTime;
 	private long endTime;
@@ -64,22 +62,6 @@ public class Order extends BaseModel{
 		this.num = num;
 	}
 
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	public int getPayStatus() {
-		return payStatus;
-	}
-
-	public void setPayStatus(int payStatus) {
-		this.payStatus = payStatus;
-	}
-
 	public int getStatus() {
 		return status;
 	}
@@ -114,9 +96,16 @@ public class Order extends BaseModel{
 
 	@Override
 	public String toString() {
-		return "Order [id=" + id + ", orderCode=" + orderCode + ", userId=" + userId + ", productId=" + productId
-				+ ", address=" + address + ", payStatus=" + payStatus + ", status=" + status + ", createTime="
-				+ createTime + ", endTime=" + endTime + ", remark=" + remark + "]";
+		return "Order{" +
+				"id=" + id +
+				", orderCode='" + orderCode + '\'' +
+				", userId=" + userId +
+				", productId=" + productId +
+				", num=" + num +
+				", status=" + status +
+				", createTime=" + createTime +
+				", endTime=" + endTime +
+				", remark='" + remark + '\'' +
+				'}';
 	}
-
 }

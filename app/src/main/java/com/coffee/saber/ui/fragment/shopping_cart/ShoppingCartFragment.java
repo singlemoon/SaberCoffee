@@ -1,10 +1,15 @@
 package com.coffee.saber.ui.fragment.shopping_cart;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +19,18 @@ import android.widget.TextView;
 
 import com.coffee.saber.R;
 import com.coffee.saber.model.Order;
+import com.coffee.saber.model.Product;
 import com.coffee.saber.model.ShoppingCart;
 import com.coffee.saber.ui.adapter.ShoppingCartAdapter;
 import com.coffee.saber.ui.fragment.BaseFragment;
 import com.coffee.saber.utils.DisplayUtils;
 import com.coffee.saber.utils.Global;
 import com.coffee.saber.utils.HttpParser;
+import com.coffee.saber.utils.JsonUtils;
 import com.coffee.saber.utils.SPPrivateUtils;
 import com.coffee.saber.utils.T;
 import com.coffee.saber.utils.TestData;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +51,7 @@ public class ShoppingCartFragment extends BaseFragment {
     private ShoppingCartAdapter mAdapter = null;
     private OrderHandler mHandler = null;
     private int checkPosition = -1;
+    private static final String TAG = "ShoppingCartFragment";
 
     @Nullable
     @Override
@@ -66,7 +75,6 @@ public class ShoppingCartFragment extends BaseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         initValue();
         initView();
     }
@@ -128,7 +136,7 @@ public class ShoppingCartFragment extends BaseFragment {
                 if (checkPosition > 0) {
                     ShoppingCart shoppingCart = shoppingCarts.get(checkPosition);
                     Order order = new Order(SPPrivateUtils.getInt(mActivity, "user_id", 0), shoppingCart.getProductId(), shoppingCart.getNum());
-                    buy(order);
+                    buy(order, shoppingCart.getId());
                 } else {
                     T.showShort(mActivity, "没有选择任何商品");
                 }
@@ -136,23 +144,24 @@ public class ShoppingCartFragment extends BaseFragment {
         });
     }
 
-    private void buy(final Order order) {
+    private void buy(final Order order, final int shoppingCartId) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    Thread.sleep(1);
-//                    Map<String, String> map = HttpParser.parseMapPost(Global.BUY_URL, "data=" + order.toJson());
-//                    int status = Integer.parseInt(map.get("status"));
-                    int status = 1;
+//                try {
+//                    Thread.sleep(1);
+                    Map<String, String> map = HttpParser.parseMapPost(Global.BUY_URL,
+                            "data=" + order.toJson()+"&shopping_cart_id="+shoppingCartId);
+                    int status = Integer.parseInt(map.get("status"));
+//                    int status = 1;
                     Message msg = new Message();
                     msg.what = BUY;
                     msg.arg1 = status;
                     mHandler.sendMessage(msg);
 
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
             }
         }).start();
     }
@@ -161,27 +170,32 @@ public class ShoppingCartFragment extends BaseFragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-//                Map<String,String> result = HttpParser.parseMapGet(Global.Order_LIST_URL);
-                try {
-                    Thread.sleep(1);
-                    List<ShoppingCart> shoppingCartList = TestData.getShoppingCarts();
-                    shoppingCarts.clear();
-                    shoppingCarts.addAll(shoppingCartList);
-                    mHandler.sendEmptyMessage(ORDER_LIST);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                Map<String,String> map = HttpParser.parseMapGet(Global.SHOPPING_CART_LIST+"&user_id="+SPPrivateUtils.get(mActivity,"user_id",0));
+                int status = Integer.parseInt(map.get("status"));
+//                    int status = 1;
+                Message msg = new Message();
+                msg.what = SHOPPING_CART;
+                msg.arg1 = status;
+                msg.obj = map.get("data");
+                mHandler.sendMessage(msg);
             }
         }).start();
     }
 
-    private void updateList() {
+    private void updateList(List<ShoppingCart> shoppingCartList) {
+        shoppingCarts.clear();
+        shoppingCarts.addAll(shoppingCartList);
         mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i(TAG, "onDestroy: ");
     }
 
     private static final int SHOPPING_CART = 123456;
     private static final int BUY = 123457;
-    private static final int ORDER_LIST = 123458;
 
     static class OrderHandler extends Handler {
         ShoppingCartFragment mFragment = null;
@@ -197,6 +211,21 @@ public class ShoppingCartFragment extends BaseFragment {
             super.handleMessage(msg);
             switch (msg.what) {
                 case SHOPPING_CART:
+                    if (msg.arg1 == 1) {
+                        String shoppingCartJson = (String) msg.obj;
+                        Log.i(TAG, "handleMessage: " + shoppingCartJson);
+                        List<ShoppingCart> shoppingCartList = JsonUtils.fromJson(shoppingCartJson, new TypeToken<List<ShoppingCart>>(){}.getType());
+                        if (null == shoppingCartList) {
+                            Log.i(TAG, "handleMessage: Json 解析失败");
+                        } else {
+                            for(ShoppingCart shoppingCart : shoppingCartList) {
+                                Log.i(TAG, "handleMessage: shoppingCart = "+shoppingCart.toString());
+                            }
+                        }
+                        mFragment.updateList(shoppingCartList);
+                    } else {
+                        T.showShort(activity, "产品获取失败");
+                    }
                     break;
                 case BUY:
                     if (1 == msg.arg1) {
@@ -204,9 +233,6 @@ public class ShoppingCartFragment extends BaseFragment {
                     } else {
                         T.showShort(activity, "下单失败");
                     }
-                    break;
-                case ORDER_LIST:
-                    mFragment.updateList();
                     break;
 
             }

@@ -16,11 +16,13 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.coffee.saber.R;
+import com.coffee.saber.dao.UserDao;
 import com.coffee.saber.model.User;
 import com.coffee.saber.ui.activity.LoginActivity;
 import com.coffee.saber.ui.fragment.BaseFragment;
 import com.coffee.saber.utils.Global;
 import com.coffee.saber.utils.HttpParser;
+import com.coffee.saber.utils.SPPrivateUtils;
 import com.coffee.saber.utils.T;
 import com.coffee.saber.utils.TestData;
 
@@ -62,14 +64,24 @@ public class MineFragment extends BaseFragment {
         saveBtn = (Button) mProductView.findViewById(R.id.save_btn);
         loginOutBtn = (Button) mProductView.findViewById(R.id.login_out_btn);
 
-        initValue();
-        initView();
-
         return mProductView;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        initValue();
+        initView();
+
+    }
+
     private void initValue() {
-        mUser = TestData.getUser();
+        mUser = UserDao.getUser(mActivity);
+        if (mUser == null) {
+            mUser = new User();
+            mUser.setNick("信息获取错误");
+        }
         mHandler = new MineHandler(this);
     }
 
@@ -129,9 +141,9 @@ public class MineFragment extends BaseFragment {
             public void run() {
                 try {
                     Thread.sleep(1);
-//                    Map<String, String> map = HttpParser.parseMapPost(Global.BUY_URL, "data=" + mUser.toJson());
-//                    int status = Integer.parseInt(map.get("status"));
-                    int status = 1;
+                    Map<String, String> map = HttpParser.parseMapPost(Global.UPDATE_USER, "data=" + mUser.toJson());
+                    int status = Integer.parseInt(map.get("status"));
+//                    int status = 1;
                     Message msg = new Message();
                     msg.what = UPDATE_USER;
                     msg.arg1 = status;
@@ -146,6 +158,7 @@ public class MineFragment extends BaseFragment {
 
     private void loginOut() {
         T.showShort(mActivity, "退出成功");
+        SPPrivateUtils.put(mActivity, "is_login", false);
         Intent intent = new Intent(mActivity, LoginActivity.class);
         mActivity.startActivity(intent);
         mActivity.finish();

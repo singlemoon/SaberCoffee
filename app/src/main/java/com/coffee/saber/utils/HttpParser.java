@@ -1,6 +1,11 @@
 package com.coffee.saber.utils;
 
 
+import android.util.Log;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,11 +17,18 @@ public class HttpParser {
 
     public static Map<String,String> parseMapGet(String urlWithParam) {
         String response = HttpUtils.doGet(urlWithParam);
-        return new HashMap<>();
+        Gson gson = new Gson();
+        Map<String, String> map = gson.fromJson(response, new TypeToken<Map<String,String>>(){}.getType());
+        Log.i("Http Parser GET", map.get("status"));
+        Log.i("Http Parser GET", map.get("data"));
+        return map;
     }
 
     public static Map<String,String> parseMapPost(String url, String param) {
         String response = HttpUtils.doPost(url, param);
-        return new HashMap<>();
+        Gson gson = new Gson();
+        Map<String, String> map = gson.fromJson(response, new TypeToken<Map<String,String>>(){}.getType());
+        Log.i("Http Parser POST", map.get("status"));
+        return map;
     }
 }
