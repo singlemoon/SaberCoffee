@@ -16,11 +16,16 @@ import com.coffee.saber.model.Order;
 import com.coffee.saber.ui.adapter.OrderAdapter;
 import com.coffee.saber.ui.fragment.BaseFragment;
 import com.coffee.saber.utils.DisplayUtils;
+import com.coffee.saber.utils.Global;
+import com.coffee.saber.utils.HttpParser;
+import com.coffee.saber.utils.JsonUtils;
+import com.coffee.saber.utils.SPPrivateUtils;
 import com.coffee.saber.utils.T;
-import com.coffee.saber.utils.TestData;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -35,6 +40,7 @@ public class OrderFragment extends BaseFragment {
     private OrderAdapter mAdapter = null;
     private OrderHandler mHandler = null;
 
+    private static final String TAG = "OrderFragment";
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -74,36 +80,61 @@ public class OrderFragment extends BaseFragment {
 
             @Override
             public void onConfirmBtnClick(int position) {
-                T.showShort(mActivity, "确认收货");
+                Order order = orders.get(position);
+                confirmOrder(order);
             }
         });
         orderLV.setAdapter(mAdapter);
         orderLV.setDividerHeight(DisplayUtils.dp2px(mActivity, 5));
     }
 
-    private void getOrders() {
+    private void confirmOrder(final Order order) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-//                Map<String,String> result = HttpParser.parseMapGet(Global.Order_LIST_URL);
-                try {
-                    Thread.sleep(1);
-                    List<Order> orderList = TestData.getOrders();
-                    orders.clear();
-                    orders.addAll(orderList);
-                    mHandler.sendEmptyMessage(ORDER_LIST);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                Map<String,String> result = HttpParser.parseMapGet(Global.FINISH_ORDER
+                        + "&order_id=" +order.getId());
+//                try {
+//                    Thread.sleep(1);
+                Message msg = new Message();
+                msg.what = CONFIRM_ORDER;
+                msg.arg1 = Integer.parseInt(result.get("status"));
+                msg.obj = result.get("data");
+                mHandler.sendMessage(msg);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
             }
         }).start();
     }
 
-    private void updateList() {
+    private void getOrders() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Map<String,String> result = HttpParser.parseMapGet(Global.ORDER_LIST
+                        + "&user_id=" + SPPrivateUtils.getInt(mActivity, "user_id", 0));
+//                try {
+//                    Thread.sleep(1);
+                Message msg = new Message();
+                msg.what = ORDER_LIST;
+                msg.arg1 = Integer.parseInt(result.get("status"));
+                msg.obj = result.get("data");
+                mHandler.sendMessage(msg);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+            }
+        }).start();
+    }
+
+    private void updateList(List<Order> orders) {
+        this.orders.clear();
+        this.orders.addAll(orders);
         mAdapter.notifyDataSetChanged();
     }
 
-    private static final int SHOPPING_CART = 123456;
+    private static final int CONFIRM_ORDER = 123456;
     private static final int BUY = 123457;
     private static final int ORDER_LIST = 123458;
 
@@ -120,7 +151,13 @@ public class OrderFragment extends BaseFragment {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case SHOPPING_CART:
+                case CONFIRM_ORDER:
+                    if (1 == msg.arg1) {
+                        T.showShort(activity, "感谢您的使用");
+                        mFragment.getOrders();
+                    } else {
+                        T.showShort(activity, "订单收货失败");
+                    }
                     break;
                 case BUY:
                     if (1 == msg.arg1) {
@@ -130,7 +167,13 @@ public class OrderFragment extends BaseFragment {
                     }
                     break;
                 case ORDER_LIST:
-                    mFragment.updateList();
+                    if (msg.arg1 == 1) {
+                        String ordersJson = (String) msg.obj;
+                        List<Order> orders = JsonUtils.fromJson(ordersJson, new TypeToken<List<Order>>(){}.getType());
+                        mFragment.updateList(orders);
+                    } else {
+                        T.showShort(activity, "订单获取失败");
+                    }
                     break;
 
             }

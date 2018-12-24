@@ -9,6 +9,8 @@ public class Order extends BaseModel{
 	private int status;
 	private long createTime;
 	private long endTime;
+	private String productName;
+	private int productPrice;
 	private String remark;
 	
 	public Order() {
@@ -94,6 +96,22 @@ public class Order extends BaseModel{
 		this.remark = remark;
 	}
 
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	public int getProductPrice() {
+		return productPrice;
+	}
+
+	public void setProductPrice(int productPrice) {
+		this.productPrice = productPrice;
+	}
+
 	@Override
 	public String toString() {
 		return "Order{" +
@@ -105,6 +123,8 @@ public class Order extends BaseModel{
 				", status=" + status +
 				", createTime=" + createTime +
 				", endTime=" + endTime +
+				", productName='" + productName + '\'' +
+				", productPrice=" + productPrice +
 				", remark='" + remark + '\'' +
 				'}';
 	}

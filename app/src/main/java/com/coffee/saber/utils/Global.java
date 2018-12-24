@@ -26,6 +26,10 @@ public class Global {
     public static final String ADD_SHOPPING_CART_URL = SHOPPING_CART_CONTROLLER+ "?action=addProduct";
 
     // 购物车
+    public static final String ORDER_LIST = ORDER_CONTROLLER+ "?action=orderList";
+    public static final String FINISH_ORDER = ORDER_CONTROLLER+ "?action=finishOrder";
+
+    // 购物车
     public static final String SHOPPING_CART_LIST = SHOPPING_CART_CONTROLLER+ "?action=shoppingCartList";
 
     public static final String CREATE_USER_TABLE = "CREATE TABLE IF NOT EXISTS USER (" +
