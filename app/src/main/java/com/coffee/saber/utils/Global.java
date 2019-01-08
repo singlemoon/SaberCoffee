@@ -7,8 +7,8 @@ import android.net.wifi.aware.PublishConfig;
  */
 public class Global {
     // 这里要换成自己的ip
-//    private static final String BASE_URL = "http://192.168.1.1:8080/SaberCoffee/";
-    private static final String BASE_URL = "http://192.168.1.5:8080/SaberCoffee/";
+    private static final String BASE_URL = "http://47.96.105.233:8083/SaberCoffee/";
+//    private static final String BASE_URL = "http://192.168.1.2:8080/SaberCoffee/";
 
     private static final String USER_CONTROLLER = BASE_URL + "UserController";
     private static final String ORDER_CONTROLLER = BASE_URL + "OrderController";
