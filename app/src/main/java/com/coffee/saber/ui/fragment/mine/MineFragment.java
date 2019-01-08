@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -30,7 +31,7 @@ import java.util.Map;
 /**
  * Created by Simo on 2018/12/11.
  */
-public class MineFragment extends BaseFragment {
+public class MineFragment extends BaseFragment implements View.OnClickListener {
     private View mProductView = null;
     private TextView title = null;
     private EditText nickEt = null;
@@ -39,6 +40,11 @@ public class MineFragment extends BaseFragment {
     private RadioButton sexFemaleRb = null;
     private RadioButton sexPrivateRb = null;
     private EditText phoneEt = null;
+    private LinearLayout coffeeWarehouseLl = null;
+    private LinearLayout coffeeCouponLl = null;
+    private LinearLayout exchangeCouponLl = null;
+    private LinearLayout billManagerLl = null;
+    private LinearLayout helpFeedbackLl = null;
     private Button saveBtn = null;
     private Button loginOutBtn = null;
 
@@ -61,6 +67,11 @@ public class MineFragment extends BaseFragment {
         phoneEt = (EditText) mProductView.findViewById(R.id.phone_et);
         saveBtn = (Button) mProductView.findViewById(R.id.save_btn);
         loginOutBtn = (Button) mProductView.findViewById(R.id.login_out_btn);
+        coffeeWarehouseLl = (LinearLayout) mProductView.findViewById(R.id.coffee_warehouse_ll);
+        coffeeCouponLl = (LinearLayout) mProductView.findViewById(R.id.coffee_coupon_ll);
+        exchangeCouponLl = (LinearLayout) mProductView.findViewById(R.id.exchange_coupon_ll);
+        billManagerLl = (LinearLayout) mProductView.findViewById(R.id.bill_manager_ll);
+        helpFeedbackLl = (LinearLayout) mProductView.findViewById(R.id.help_feedback_ll);
 
         initValue();
         initView();
@@ -121,6 +132,16 @@ public class MineFragment extends BaseFragment {
                 loginOut();
             }
         });
+        coffeeWarehouseLl.setOnClickListener(this);
+        coffeeCouponLl.setOnClickListener(this);
+        exchangeCouponLl.setOnClickListener(this);
+        billManagerLl.setOnClickListener(this);
+        helpFeedbackLl.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        T.showShort(mActivity, "功能建设中");
     }
 
     private void updateUser() {
