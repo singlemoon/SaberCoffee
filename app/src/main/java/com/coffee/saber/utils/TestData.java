@@ -42,6 +42,7 @@ public class TestData {
             order.setProductId(1);
             order.setOrderCode("201812120000" + i);
             order.setRemark(names[i] + "：冬天暖心又暖胃");
+            order.setStatus(i%2);
             orders.add(order);
         }
         return orders;
