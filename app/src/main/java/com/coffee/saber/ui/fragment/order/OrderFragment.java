@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.coffee.saber.R;
 import com.coffee.saber.model.Order;
+import com.coffee.saber.model.Product;
 import com.coffee.saber.ui.adapter.OrderAdapter;
 import com.coffee.saber.ui.fragment.BaseFragment;
 import com.coffee.saber.utils.DisplayUtils;
@@ -93,7 +94,12 @@ public class OrderFragment extends BaseFragment implements View.OnClickListener 
             @Override
             public void onConfirmBtnClick(int position) {
                 Order order = orders.get(position);
-                confirmOrder(order);
+                if (order.getStatus() == 1) {
+                    order.setStatus(0);
+                    buy(order);
+                } else {
+                    confirmOrder(order);
+                }
             }
         });
         orderLV.setAdapter(mAdapter);
@@ -173,6 +179,25 @@ public class OrderFragment extends BaseFragment implements View.OnClickListener 
         }).start();
     }
 
+    private void buy(final Order order) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Map<String, String> map = HttpParser.parseMapPost(Global.BUY_URL,  "data="+order.toJson());
+                    int status = Integer.parseInt(map.get("status"));
+//                    int status = 1;
+                    Message msg = new Message();
+                    msg.what = BUY;
+                    msg.arg1 = status;
+                    mHandler.sendMessage(msg);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
     private void getOrders() {
         new Thread(new Runnable() {
             @Override
@@ -227,6 +252,7 @@ public class OrderFragment extends BaseFragment implements View.OnClickListener 
                 case BUY:
                     if (1 == msg.arg1) {
                         T.showShort(activity, "下单成功");
+                        mFragment.getOrders();
                     } else {
                         T.showShort(activity, "下单失败");
                     }
