@@ -68,6 +68,9 @@ public class OrderAdapter extends ArrayAdapter {
 //                mListener.onItemClick(position);
 //            }
 //        });
+        if (order.getStatus() == 1) {
+            confirmBtn.setText("再来一单");
+        }
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
