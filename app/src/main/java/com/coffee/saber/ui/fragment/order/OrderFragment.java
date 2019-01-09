@@ -133,27 +133,19 @@ public class OrderFragment extends BaseFragment implements View.OnClickListener 
     }
 
     private void changeList(int type) {
-        orders.clear();
+        List<Order> list = new ArrayList<>();
         if (type == 2) {
-            orders.addAll(mOrders);
-            for (Order order :
-                    orders) {
-                Log.i("changeList", "type = " + type + "changeList: " + order.toString());
-            }
-            updateList();
+            list.addAll(mOrders);
+            updateList(list);
             return;
         }
         for (int i = 0; i < mOrders.size(); i++) {
             Order order = mOrders.get(i);
             if (order.getStatus() == type) {
-                orders.add(order);
+                list.add(order);
             }
         }
-        for (Order order :
-                orders) {
-            Log.i("changeList", "type = " + type + "changeList: " + order.toString());
-        }
-        updateList();
+        updateList(list);
     }
 
     private void listAnim() {
@@ -243,6 +235,7 @@ public class OrderFragment extends BaseFragment implements View.OnClickListener 
                     if (msg.arg1 == 1) {
                         String ordersJson = (String) msg.obj;
                         List<Order> orders = JsonUtils.fromJson(ordersJson, new TypeToken<List<Order>>(){}.getType());
+                        mFragment.mOrders = orders;
                         mFragment.updateList(orders);
                     } else {
                         T.showShort(activity, "订单获取失败");
