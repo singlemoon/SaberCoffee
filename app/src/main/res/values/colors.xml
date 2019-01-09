@@ -11,4 +11,6 @@
     <color name="theme_text">#7F7F7F</color>
     <color name="transparent_color">#00000000</color>
     <color name="shadow">#88000000</color>
+
+    <color name="top_text_color">#269FC8</color>
 </resources>

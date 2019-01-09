@@ -5,9 +5,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -31,12 +35,16 @@ import java.util.Map;
 /**
  * Created by Simo on 2018/12/11.
  */
-public class OrderFragment extends BaseFragment {
+public class OrderFragment extends BaseFragment implements View.OnClickListener {
     private View mOrderView = null;
     private TextView title = null;
     private ListView orderLV = null;
+    private LinearLayout orderAllLl = null;
+    private LinearLayout orderNotCompleteLl = null;
+    private LinearLayout orderCompleteLl = null;
 
-    private List<Order> orders = null;
+    private List<Order> orders = null;  // 用来存储列表显示数据
+    private List<Order> mOrders = null; // 用来存储列表源数据
     private OrderAdapter mAdapter = null;
     private OrderHandler mHandler = null;
 
@@ -49,6 +57,9 @@ public class OrderFragment extends BaseFragment {
         }
         title = (TextView) mOrderView.findViewById(R.id.title_text);
         orderLV = (ListView) mOrderView.findViewById(R.id.order_lv);
+        orderAllLl = (LinearLayout) mOrderView.findViewById(R.id.order_all_ll);
+        orderNotCompleteLl = (LinearLayout) mOrderView.findViewById(R.id.order_not_complete_ll);
+        orderCompleteLl = (LinearLayout) mOrderView.findViewById(R.id.order_complete_ll);
 
         return mOrderView;
     }
@@ -66,6 +77,7 @@ public class OrderFragment extends BaseFragment {
 
     private void initValue() {
         orders = new ArrayList<>();
+        mOrders = new ArrayList<>();
         mHandler = new OrderHandler(this);
         getOrders();
     }
@@ -86,6 +98,67 @@ public class OrderFragment extends BaseFragment {
         });
         orderLV.setAdapter(mAdapter);
         orderLV.setDividerHeight(DisplayUtils.dp2px(mActivity, 5));
+
+        orderAllLl.setOnClickListener(this);
+        orderNotCompleteLl.setOnClickListener(this);
+        orderCompleteLl.setOnClickListener(this);
+        topTabSelect(true,false,false);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.order_all_ll:
+                topTabSelect(true,false,false);
+                changeList(2);
+                break;
+            case R.id.order_not_complete_ll:
+                topTabSelect(false,true,false);
+                changeList(0);
+                break;
+            case R.id.order_complete_ll:
+                topTabSelect(false,false,true);
+                changeList(1);
+                break;
+            default:
+                break;
+        }
+        listAnim();
+    }
+    // 修改顶部tab样式
+    private void topTabSelect(boolean order_all_ll, boolean order_not_complete_ll, boolean order_complete_ll) {
+        orderAllLl.setSelected(order_all_ll);
+        orderNotCompleteLl.setSelected(order_not_complete_ll);
+        orderCompleteLl.setSelected(order_complete_ll);
+    }
+
+    private void changeList(int type) {
+        orders.clear();
+        if (type == 2) {
+            orders.addAll(mOrders);
+            for (Order order :
+                    orders) {
+                Log.i("changeList", "type = " + type + "changeList: " + order.toString());
+            }
+            updateList();
+            return;
+        }
+        for (int i = 0; i < mOrders.size(); i++) {
+            Order order = mOrders.get(i);
+            if (order.getStatus() == type) {
+                orders.add(order);
+            }
+        }
+        for (Order order :
+                orders) {
+            Log.i("changeList", "type = " + type + "changeList: " + order.toString());
+        }
+        updateList();
+    }
+
+    private void listAnim() {
+        Animation listAnim = AnimationUtils.loadAnimation(mActivity, R.anim.list_anim);
+        orderLV.startAnimation(listAnim);
     }
 
     private void confirmOrder(final Order order) {
