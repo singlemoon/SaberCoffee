@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">幸运咖啡</string>
+    <string name="app_name">吾王咖啡</string>
 
     <!--login-->
     <string name="username">请输入用户名</string>
