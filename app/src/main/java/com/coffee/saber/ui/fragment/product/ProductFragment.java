@@ -171,7 +171,7 @@ public class ProductFragment extends BaseFragment {
     }
 
     private void addShoppingCart() {
-
+        T.showShort(mActivity, "加入购物车成功");
     }
 
     private void buy(final Product product, final int num) {

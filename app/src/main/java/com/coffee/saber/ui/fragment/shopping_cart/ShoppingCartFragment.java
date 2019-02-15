@@ -94,7 +94,7 @@ public class ShoppingCartFragment extends BaseFragment {
 
             @Override
             public void onDifBtnClickListener(int position, int order_num) {
-                if (order_num >= 0) {
+                if (order_num > 0) {
                     shoppingCarts.get(position).setNum(order_num);
                     if (checkPosition == position) {
                         String sumPrice = "￥" + order_num * shoppingCarts.get(position).getProductPrice();
@@ -102,7 +102,8 @@ public class ShoppingCartFragment extends BaseFragment {
                     }
                     mAdapter.notifyDataSetChanged();
                 } else {
-                    T.showShort(mActivity,"这位客官行行好，实在是不能再减了");
+                    shoppingCarts.remove(position);
+                    mAdapter.notifyDataSetChanged();
                 }
             }
 
