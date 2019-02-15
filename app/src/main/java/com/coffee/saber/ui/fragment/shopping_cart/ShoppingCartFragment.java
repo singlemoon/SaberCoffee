@@ -51,6 +51,8 @@ public class ShoppingCartFragment extends BaseFragment {
     private ShoppingCartAdapter mAdapter = null;
     private OrderHandler mHandler = null;
     private int checkPosition = -1;
+    private boolean clickable = true;
+
     private static final String TAG = "ShoppingCartFragment";
 
     @Nullable
@@ -92,26 +94,25 @@ public class ShoppingCartFragment extends BaseFragment {
 
             @Override
             public void onAddBtnClickListener(int position, int order_num) {
-                shoppingCarts.get(position).setNum(order_num);
-                if (checkPosition == position) {
-                    String sumPrice = "￥" + order_num * shoppingCarts.get(position).getProductPrice();
-                    sumPriceTv.setText(sumPrice);
-                }
-                mAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onDifBtnClickListener(int position, int order_num) {
-                if (order_num > 0) {
+                if (clickable) {
                     shoppingCarts.get(position).setNum(order_num);
                     if (checkPosition == position) {
                         String sumPrice = "￥" + order_num * shoppingCarts.get(position).getProductPrice();
                         sumPriceTv.setText(sumPrice);
                     }
-                    mAdapter.notifyDataSetChanged();
-                } else {
-                    shoppingCarts.remove(position);
-                    mAdapter.notifyDataSetChanged();
+                    changeShoppingCartNum(order_num,position);
+                }
+            }
+
+            @Override
+            public void onDifBtnClickListener(int position, int order_num) {
+                if (clickable) {
+                    shoppingCarts.get(position).setNum(order_num);
+                    if (checkPosition == position) {
+                        String sumPrice = "￥" + order_num * shoppingCarts.get(position).getProductPrice();
+                        sumPriceTv.setText(sumPrice);
+                    }
+                    changeShoppingCartNum(order_num,position);
                 }
             }
 
@@ -145,6 +146,28 @@ public class ShoppingCartFragment extends BaseFragment {
         });
     }
 
+    /**
+     * 修改购物车产品数量
+     * @param num
+     * @param position int
+     */
+    private void changeShoppingCartNum(final int num, int position) {
+        clickable = false;
+        final ShoppingCart shoppingCart = shoppingCarts.get(position);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int id = shoppingCart.getId();
+                Map<String,String> map = HttpParser.parseMapGet(Global.CHANGE_SHOPPING_CART_NUM+"&id="+id+"&num="+num);
+                int status = Integer.parseInt(map.get("status"));
+//                    int status = 1;
+                Message msg = new Message();
+                msg.what = CHANGE;
+                msg.arg1 = status;
+                mHandler.sendMessage(msg);
+            }
+        }).start();
+    }
     private void buy(final Order order, final int shoppingCartId) {
         new Thread(new Runnable() {
             @Override
@@ -187,6 +210,7 @@ public class ShoppingCartFragment extends BaseFragment {
         shoppingCarts.clear();
         shoppingCarts.addAll(shoppingCartList);
         mAdapter.notifyDataSetChanged();
+        clickable = true;
     }
 
     @Override
@@ -197,6 +221,7 @@ public class ShoppingCartFragment extends BaseFragment {
 
     private static final int SHOPPING_CART = 123456;
     private static final int BUY = 123457;
+    private static final int CHANGE = 123458;
 
     static class OrderHandler extends Handler {
         ShoppingCartFragment mFragment = null;
@@ -235,7 +260,15 @@ public class ShoppingCartFragment extends BaseFragment {
                         T.showShort(activity, "下单失败");
                     }
                     break;
-
+                case CHANGE:
+                    if (1 == msg.arg1) {
+                        mFragment.getShoppingCarts();
+                    } else {
+                        T.showShort(activity, "修改失败");
+                    }
+                    break;
+                default:
+                    break;
             }
         }
     }
