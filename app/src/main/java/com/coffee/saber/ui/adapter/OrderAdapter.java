@@ -37,7 +37,7 @@ public class OrderAdapter extends ArrayAdapter {
         View view = LayoutInflater.from(getContext()).inflate(resourceId, null);
 
 //        LinearLayout orderItemLL = view.findViewById(R.id.order_item_ll);
-        Button confirmBtn = view.findViewById(R.id.confirm_btn);
+        Button confirmBtn = (Button) view.findViewById(R.id.confirm_btn);
 
 //        orderItemLL.setOnClickListener(new View.OnClickListener() {
 //            @Override
