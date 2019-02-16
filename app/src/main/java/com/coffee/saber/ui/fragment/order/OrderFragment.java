@@ -1,6 +1,10 @@
 package com.coffee.saber.ui.fragment.order;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -81,6 +85,10 @@ public class OrderFragment extends BaseFragment implements View.OnClickListener 
         mOrders = new ArrayList<>();
         mHandler = new OrderHandler(this);
         getOrders();
+        //        注册广播
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.coffee.refresh");
+        mActivity.registerReceiver(new OrderBroadCast(), filter);
     }
 
     private void initView() {
@@ -269,6 +277,13 @@ public class OrderFragment extends BaseFragment implements View.OnClickListener 
                     break;
 
             }
+        }
+    }
+    // 广播，用于刷新列表
+    class OrderBroadCast extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            getOrders();
         }
     }
 }

@@ -135,7 +135,7 @@ public class ShoppingCartFragment extends BaseFragment {
         buyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checkPosition > 0) {
+                if (checkPosition >= 0) {
                     ShoppingCart shoppingCart = shoppingCarts.get(checkPosition);
                     Order order = new Order(SPPrivateUtils.getInt(mActivity, "user_id", 0), shoppingCart.getProductId(), shoppingCart.getNum());
                     buy(order, shoppingCart.getId());
@@ -255,7 +255,14 @@ public class ShoppingCartFragment extends BaseFragment {
                     break;
                 case BUY:
                     if (1 == msg.arg1) {
+                        // 下单完成，刷新页面，并重置已选项
+                        mFragment.checkPosition = -1;
+                        mFragment.mAdapter.setCheckPosition(-1);
+                        mFragment.sumPriceTv.setText("￥0");
                         T.showShort(activity, "下单成功");
+                        // 刷新
+                        mFragment.getShoppingCarts();
+                        activity.sendBroadcast(new Intent("com.coffee.refresh"));
                     } else {
                         T.showShort(activity, "下单失败");
                     }
@@ -264,6 +271,7 @@ public class ShoppingCartFragment extends BaseFragment {
                     if (1 == msg.arg1) {
                         mFragment.getShoppingCarts();
                     } else {
+                        mFragment.clickable = true;
                         T.showShort(activity, "修改失败");
                     }
                     break;

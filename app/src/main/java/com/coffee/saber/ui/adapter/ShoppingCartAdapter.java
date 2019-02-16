@@ -93,7 +93,9 @@ public class ShoppingCartAdapter extends ArrayAdapter {
         return shoppingCarts.size();
     }
 
-
+    public void setCheckPosition(int checkPosition) {
+        this.checkPosition = checkPosition;
+    }
 
     public interface OnItemBtnClickListener {
         void onAddBtnClickListener(int position, int order_num);

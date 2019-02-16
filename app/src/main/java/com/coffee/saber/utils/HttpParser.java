@@ -19,8 +19,12 @@ public class HttpParser {
         String response = HttpUtils.doGet(urlWithParam);
         Gson gson = new Gson();
         Map<String, String> map = gson.fromJson(response, new TypeToken<Map<String,String>>(){}.getType());
-        Log.i("Http Parser GET", map.get("status"));
-        Log.i("Http Parser GET", map.get("data"));
+//        Log.i("Http Parser GET", map.get("status"));
+//        Log.i("Http Parser GET", map.get("data"));
+        if (null == map) {
+            map = new HashMap<>();
+            map.put("status", "0");
+        }
         return map;
     }
 
@@ -28,7 +32,11 @@ public class HttpParser {
         String response = HttpUtils.doPost(url, param);
         Gson gson = new Gson();
         Map<String, String> map = gson.fromJson(response, new TypeToken<Map<String,String>>(){}.getType());
-        Log.i("Http Parser POST", map.get("status"));
+//        Log.i("Http Parser POST", map.get("status"));
+        if (null == map) {
+            map = new HashMap<>();
+            map.put("status", "0");
+        }
         return map;
     }
 }
