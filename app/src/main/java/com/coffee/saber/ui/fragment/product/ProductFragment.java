@@ -299,6 +299,8 @@ public class ProductFragment extends BaseFragment {
                     if (1 == msg.arg1) {
                         T.showShort(activity, "下单成功");
                         mFragment.buyDialog.dismiss();
+                        // 刷新订单列表
+                        activity.sendBroadcast(new Intent("com.coffee.refresh"));
                     } else {
                         T.showShort(activity, "下单失败");
                     }

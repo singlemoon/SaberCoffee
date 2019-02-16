@@ -260,8 +260,9 @@ public class ShoppingCartFragment extends BaseFragment {
                         mFragment.mAdapter.setCheckPosition(-1);
                         mFragment.sumPriceTv.setText("￥0");
                         T.showShort(activity, "下单成功");
-                        // 刷新
+                        // 刷新购物车
                         mFragment.getShoppingCarts();
+                        // 刷新订单
                         activity.sendBroadcast(new Intent("com.coffee.refresh"));
                     } else {
                         T.showShort(activity, "下单失败");
