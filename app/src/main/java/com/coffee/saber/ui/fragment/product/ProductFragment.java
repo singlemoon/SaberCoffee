@@ -145,13 +145,13 @@ public class ProductFragment extends BaseFragment {
         buyDialog = new AlertDialog.Builder(mActivity).create();
 
         final View alertView = LayoutInflater.from(mActivity).inflate(R.layout.alert_buy, null);
-        final TextView productNameTv = alertView.findViewById(R.id.product_name_tv);
-        final TextView describeTv = alertView.findViewById(R.id.describe_tv);
-        final TextView sumPriceTV = alertView.findViewById(R.id.sum_price_tv);
-        final TextView orderNumTV = alertView.findViewById(R.id.order_num_tv);
-        ImageView addBtn = alertView.findViewById(R.id.add_btn);
-        ImageView difBtn = alertView.findViewById(R.id.dif_btn);
-        Button addOrderBtn = alertView.findViewById(R.id.add_order_ben);
+        final TextView productNameTv = (TextView) alertView.findViewById(R.id.product_name_tv);
+        final TextView describeTv = (TextView) alertView.findViewById(R.id.describe_tv);
+        final TextView sumPriceTV = (TextView) alertView.findViewById(R.id.sum_price_tv);
+        final TextView orderNumTV = (TextView) alertView.findViewById(R.id.order_num_tv);
+        ImageView addBtn = (ImageView) alertView.findViewById(R.id.add_btn);
+        ImageView difBtn = (ImageView) alertView.findViewById(R.id.dif_btn);
+        Button addOrderBtn = (Button) alertView.findViewById(R.id.add_order_ben);
 
         String sumPrice = "￥" + product.getPrice();
         productNameTv.setText(product.getName());

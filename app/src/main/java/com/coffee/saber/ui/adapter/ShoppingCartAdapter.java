@@ -38,13 +38,13 @@ public class ShoppingCartAdapter extends ArrayAdapter {
 
         final ShoppingCart shoppingCart = shoppingCarts.get(position);
         View view = LayoutInflater.from(getContext()).inflate(resourceId, null);
-        TextView productNameTv = view.findViewById(R.id.product_name_tv);
-        TextView describeTv = view.findViewById(R.id.describe_tv);
-        TextView productPriceTv = view.findViewById(R.id.product_price_tv);
-        CheckBox selRb = view.findViewById(R.id.sel_rb);
-        ImageView addBtn = view.findViewById(R.id.add_btn);
-        TextView orderNumTv = view.findViewById(R.id.order_num_tv);
-        ImageView difBtn = view.findViewById(R.id.dif_btn);
+        TextView productNameTv = (TextView) view.findViewById(R.id.product_name_tv);
+        TextView describeTv = (TextView)view.findViewById(R.id.describe_tv);
+        TextView productPriceTv = (TextView)view.findViewById(R.id.product_price_tv);
+        CheckBox selRb = (CheckBox)view.findViewById(R.id.sel_rb);
+        ImageView addBtn = (ImageView)view.findViewById(R.id.add_btn);
+        TextView orderNumTv = (TextView)view.findViewById(R.id.order_num_tv);
+        ImageView difBtn = (ImageView)view.findViewById(R.id.dif_btn);
 
         productNameTv.setText(shoppingCart.getProductName());
         describeTv.setText(shoppingCart.getDescribe());

@@ -40,8 +40,8 @@ public class ProductAdapter extends ArrayAdapter {
         TextView productNameTv = (TextView) view.findViewById(R.id.product_name_tv);
         TextView priceTv = (TextView) view.findViewById(R.id.price_tv);
         TextView describeTv = (TextView) view.findViewById(R.id.describe_tv);
-        Button addShoppingCartBtn = view.findViewById(R.id.add_shopping_cart_btn);
-        Button buyBtn = view.findViewById(R.id.buy_btn);
+        Button addShoppingCartBtn = (Button)view.findViewById(R.id.add_shopping_cart_btn);
+        Button buyBtn = (Button)view.findViewById(R.id.buy_btn);
 
         productNameTv.setText(product.getName());
         describeTv.setText(product.getDescribe());
